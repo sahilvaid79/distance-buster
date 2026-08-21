@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>psst.</title>
+<style>
+  :root{
+    --lavender: #efe6fb;
+    --lavender-deep: #b9a6e0;
+    --pink: #ffd6e6;
+    --pink-deep: #f296c0;
+    --ink: #4a3f66;
+    --ink-soft: #8477a6;
+    --cream: #fff9f5;
+    --sun: #ffcf7a;
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+  }
+  *{ box-sizing: border-box; }
+  html,body{ height:100%; margin:0; }
+  body{
+    font-family: 'Georgia', 'Iowan Old Style', serif;
+    background: linear-gradient(160deg, var(--lavender) 0%, var(--pink) 100%);
+    display:flex; align-items:center; justify-content:center;
+    overflow:hidden;
+    -webkit-tap-highlight-color: transparent;
+    transition: background 1s ease;
+  }
+  body.angry-bg{
+    background: linear-gradient(160deg, #6b3350 0%, #3a2145 100%);
+  }
+
+  .stage{
+    position:relative;
+    width:min(420px, 92vw);
+    height:min(720px, 92vh);
+    background: var(--cream);
+    border-radius: 28px;
+    box-shadow: 0 30px 60px -20px rgba(90,60,120,0.35), 0 0 0 1px rgba(255,255,255,0.4) inset;
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    padding: 32px 26px;
+    text-align:center;
+  }
+
+  /* ---------- soft ambient dots ---------- */
+  .stage::before{
+    content:"";
+    position:absolute; inset:0;
+    background-image: radial-gradient(var(--lavender-deep) 1px, transparent 1px);
+    background-size: 26px 26px;
+    opacity: 0.08;
+    pointer-events:none;
+  }
+
+  .scene{
+    position:relative;
+    width:100%;
+    display:none;
+    flex-direction:column;
+    align-items:center;
+    gap: 18px;
+  }
+  .scene.active{ display:flex; }
+
+  /* ---------- Scene 1: click me ---------- */
+  .peek{
+    font-size: 15px;
+    letter-spacing: 0.02em;
+    color: var(--ink-soft);
+  }
+  .knock-wrap{ position:relative; width:96px; height:96px; display:flex; align-items:center; justify-content:center; }
+  .ring{
+    position:absolute; inset:0;
+    border-radius:50%;
+    border: 2px solid var(--pink-deep);
+    animation: pulse-ring 1.8s ease-out infinite;
+  }
+  .ring.delay{ animation-delay: 0.9s; }
+  @keyframes pulse-ring{
+    0%{ transform:scale(0.7); opacity:0.7; }
+    100%{ transform:scale(1.6); opacity:0; }
+  }
+  .knock-btn{
+    position:relative;
+    width:88px; height:88px;
+    border-radius:50%;
+    border:none;
+    background: linear-gradient(145deg, var(--pink-deep), var(--lavender-deep));
+    color:#fff;
+    font-size:32px;
+    cursor:pointer;
+    box-shadow: 0 10px 24px -8px rgba(180,90,150,0.5);
+    animation: bounce-btn 1.6s ease-in-out infinite;
+  }
+  @keyframes bounce-btn{
+    0%,100%{ transform: translateY(0); }
+    50%{ transform: translateY(-10px); }
+  }
+  .knock-label{
+    font-size: 13px;
+    color: var(--ink-soft);
+    margin-top: 4px;
+  }
+
+  /* ---------- Scene 2: timeline ---------- */
+  .timeline{
+    width:100%;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    min-height: 260px;
+    justify-content:flex-end;
+  }
+  .bubble-row{
+    display:flex;
+    width:100%;
+    opacity:0;
+    transform: translateY(8px);
+  }
+  .bubble-row.her{ justify-content:flex-start; }
+  .bubble-row.me{ justify-content:flex-end; }
+  .bubble-row.show{ animation: rise-in 0.45s ease forwards; }
+  @keyframes rise-in{
+    to{ opacity:1; transform:translateY(0); }
+  }
+  .bubble{
+    max-width: 78%;
+    padding: 11px 16px;
+    border-radius: 18px;
+    font-size: 14.5px;
+    line-height:1.4;
+  }
+  .bubble.her{
+    background: var(--lavender);
+    color: var(--ink);
+    border-bottom-left-radius: 5px;
+  }
+  .bubble.me{
+    background: linear-gradient(135deg, var(--pink-deep), #f4a9c8);
+    color: #fff;
+    border-bottom-right-radius: 5px;
+  }
+  .typing{
+    display:inline-flex;
+    gap:4px;
+    padding: 13px 16px;
+  }
+  .typing span{
+    width:6px; height:6px; border-radius:50%;
+    background: var(--ink-soft);
+    opacity:0.5;
+    animation: type-dot 1s infinite ease-in-out;
+  }
+  .typing span:nth-child(2){ animation-delay:0.15s; }
+  .typing span:nth-child(3){ animation-delay:0.3s; }
+  @keyframes type-dot{
+    0%,60%,100%{ transform: translateY(0); opacity:0.4; }
+    30%{ transform: translateY(-4px); opacity:1; }
+  }
+
+  /* ---------- Scene 3: shake accusation ---------- */
+  #scene3{
+    position:relative;
+    transition: background 0.6s ease;
+  }
+  .scene#scene3.angry{
+    background: radial-gradient(circle at 50% 40%, #ffe3ee 0%, #ffc9dc 60%, #f7a8c4 100%);
+    margin: -32px -26px;
+    padding: 32px 26px;
+    width: calc(100% + 52px);
+    border-radius: 28px;
+  }
+  .accuse{
+    font-size: 23px;
+    color: var(--ink);
+    font-weight:bold;
+    line-height:1.5;
+    position:relative;
+    z-index:2;
+  }
+  .accuse-emoji{
+    font-size: 15px;
+    color: var(--ink-soft);
+    opacity:0;
+    animation: fade-up 0.5s ease forwards;
+    animation-delay: 0.9s;
+    position:relative;
+    z-index:2;
+  }
+  .next-btn{
+    margin-top: 10px;
+    position:relative;
+    z-index:2;
+    font-family: inherit;
+    font-size: 13.5px;
+    color: #fff;
+    background: linear-gradient(135deg, var(--pink-deep), var(--lavender-deep));
+    border:none;
+    border-radius: 20px;
+    padding: 9px 20px;
+    cursor:pointer;
+    opacity:0;
+    animation: fade-up 0.5s ease forwards;
+    animation-delay: 1.4s;
+    box-shadow: 0 8px 18px -8px rgba(150,80,140,0.5);
+  }
+  .storm-cloud{
+    position:absolute;
+    font-size: 34px;
+    opacity:0;
+    animation: cloud-drop 0.7s ease forwards;
+    pointer-events:none;
+  }
+  @keyframes cloud-drop{
+    0%{ opacity:0; transform: translateY(-16px) scale(0.7); }
+    100%{ opacity:0.85; transform: translateY(0) scale(1); }
+  }
+  .shake{
+    animation: shake-hard 0.6s ease;
+  }
+  @keyframes shake-hard{
+    0%,100%{ transform: translateX(0) rotate(0); }
+    15%{ transform: translateX(-11px) rotate(-3.5deg); }
+    30%{ transform: translateX(10px) rotate(3.5deg); }
+    45%{ transform: translateX(-8px) rotate(-2.5deg); }
+    60%{ transform: translateX(8px) rotate(2.5deg); }
+    75%{ transform: translateX(-5px) rotate(-1.5deg); }
+    90%{ transform: translateX(4px) rotate(1deg); }
+  }
+
+  /* ---------- Scene 4/5: stick figures + reveal ---------- */
+  .duo-wrap{
+    position:relative;
+    width:100%;
+    height: 210px;
+    display:flex;
+    align-items:flex-end;
+    justify-content:center;
+    gap: 18px;
+    transition: opacity 0.6s ease;
+  }
+  .duo-wrap.fade-out{ opacity:0; }
+  .figure{
+    position:relative;
+    width:80px;
+  }
+  .figure svg{ width:80px; height:170px; display:block; overflow:visible; }
+
+  .tap-prompt{
+    font-size: 15px;
+    color: var(--ink-soft);
+    opacity:0;
+    animation: fade-up 0.6s ease forwards;
+    animation-delay: 0.2s;
+    display:flex;
+    align-items:center;
+    gap:6px;
+    transition: opacity 0.4s ease;
+  }
+  .tap-prompt.fade-out{ opacity:0 !important; animation:none; }
+  @keyframes fade-up{
+    to{ opacity:1; }
+  }
+  .heart-mid{
+    position:relative;
+    width:74px; height:74px;
+    margin-bottom: 40px;
+    transition: opacity 0.6s ease;
+    flex-shrink:0;
+  }
+  .heart-mid.fade-out{ opacity:0; }
+  .heart-tap-target{
+    position:absolute;
+    left:0; top:0;
+    width:74px; height:74px;
+    border-radius:50%;
+    background:transparent;
+    border:none;
+    z-index:8;
+    cursor:pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .heart-tap-ring{
+    position:absolute;
+    left:50%; top:50%;
+    width:74px; height:74px;
+    transform: translate(-50%,-50%);
+    border-radius:50%;
+    border: 2px solid var(--pink-deep);
+    z-index:4;
+    animation: pulse-ring-centered 1.6s ease-out infinite;
+    pointer-events:none;
+    box-sizing:border-box;
+  }
+  .heart-tap-ring.hide{ display:none; }
+  @keyframes pulse-ring-centered{
+    0%{ transform: translate(-50%,-50%) scale(0.7); opacity:0.7; }
+    100%{ transform: translate(-50%,-50%) scale(1.6); opacity:0; }
+  }
+  .heart-still{
+    position:absolute;
+    left:50%; top:50%;
+    transform: translate(-50%,-50%);
+    font-size: 30px;
+    line-height:1;
+    z-index:3;
+    pointer-events:none;
+  }
+  .heart-still.beat{
+    animation: heart-beat 0.8s ease-in-out 2;
+  }
+  @keyframes heart-beat{
+    0%{ transform: translate(-50%,-50%) scale(1); }
+    50%{ transform: translate(-50%,-50%) scale(1.35); }
+    100%{ transform: translate(-50%,-50%) scale(1); }
+  }
+
+
+  #scene45{
+    position:relative;
+    min-height: 320px;
+    justify-content:center;
+  }
+  .final-line{
+    font-size: 20px;
+    color: var(--ink);
+    font-style: italic;
+    font-weight: bold;
+    line-height:1.6;
+    opacity:0;
+    max-width: 300px;
+    position:absolute;
+    left:50%; top:50%;
+    transform: translate(-50%,-50%);
+    pointer-events:none;
+  }
+  .final-line.show{
+    animation: fade-up-center 1s ease forwards;
+    pointer-events:auto;
+  }
+  @keyframes fade-up-center{
+    from{ opacity:0; transform: translate(-50%,-42%); }
+    to{ opacity:1; transform: translate(-50%,-50%); }
+  }
+
+  /* ---------- Scene 6: good morning ---------- */
+  .morning-scene{
+    position:relative;
+    gap: 14px;
+    padding-top: 10px;
+  }
+  .sun{
+    width:70px; height:70px;
+    border-radius:50%;
+    background: radial-gradient(circle at 35% 30%, #fff2cf, var(--sun) 60%, #ffb454 100%);
+    box-shadow: 0 0 0 8px rgba(255,207,122,0.25), 0 0 40px 10px rgba(255,180,90,0.35);
+    opacity:0;
+    transform: translateY(18px) scale(0.7);
+    animation: sun-rise 1s cubic-bezier(.34,1.2,.64,1) forwards;
+  }
+  @keyframes sun-rise{
+    to{ opacity:1; transform: translateY(0) scale(1); }
+  }
+  .gm-title{
+    font-size: 26px;
+    color: var(--ink);
+    font-weight:bold;
+    opacity:0;
+    animation: fade-up 0.8s ease forwards;
+    animation-delay: 0.5s;
+  }
+  .gm-sub{
+    font-size: 14.5px;
+    color: var(--ink-soft);
+    line-height:1.6;
+    max-width: 300px;
+    opacity:0;
+    animation: fade-up 0.8s ease forwards;
+    animation-delay: 0.9s;
+  }
+  .gm-mission{
+    font-size: 12.5px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--pink-deep);
+    opacity:0;
+    animation: fade-up 0.8s ease forwards;
+    animation-delay: 1.3s;
+  }
+
+  .replay{
+    position:absolute;
+    bottom: 18px;
+    right: 20px;
+    font-size: 11px;
+    color: var(--ink-soft);
+    background:none;
+    border: 1px solid var(--lavender-deep);
+    border-radius: 20px;
+    padding: 6px 12px;
+    cursor:pointer;
+    opacity:0;
+    animation: fade-up 0.8s ease forwards;
+    animation-delay: 1.8s;
+  }
+</style>
+</head>
+<body>
+
+<div class="stage" id="stage">
+
+  <!-- Scene 1 -->
+  <div class="scene active" id="scene1">
+    <div class="peek">psst...</div>
+    <div class="knock-wrap">
+      <div class="ring"></div>
+      <div class="ring delay"></div>
+      <button class="knock-btn" id="startBtn" aria-label="click me">👀</button>
+    </div>
+    <div class="knock-label">click me</div>
+  </div>
+
+  <!-- Scene 2 -->
+  <div class="scene" id="scene2">
+    <div class="timeline" id="timeline"></div>
+  </div>
+
+  <!-- Scene 3 -->
+  <div class="scene" id="scene3">
+    <span class="storm-cloud" style="left:14%; top:8%; animation-delay:0.05s;">☁️</span>
+    <span class="storm-cloud" style="right:12%; top:4%; animation-delay:0.2s;">💔</span>
+    <div class="accuse" id="accuseText">tumne "I love you"<br>nahi bola aaj 😤</div>
+    <div class="accuse-emoji">na hug, na pyaar bhari baat... kuch toh kami hai 🥺</div>
+    <button class="next-btn" id="scene3NextBtn">Next →</button>
+  </div>
+
+  <!-- Scene 4 / 5 -->
+  <div class="scene" id="scene45">
+    <div class="duo-wrap" id="duoWrap">
+      <div class="figure fig-her">
+        <svg viewBox="0 0 80 170"><ellipse cx="40" cy="28" rx="17" ry="18" fill="none" stroke="#b9a6e0" stroke-width="4"/><path d="M20 24 Q40 4 60 24" fill="none" stroke="#b9a6e0" stroke-width="4"/><line x1="40" y1="46" x2="40" y2="110" stroke="#b9a6e0" stroke-width="4" stroke-linecap="round"/><path d="M40 60 Q22 60 16 90" fill="none" stroke="#b9a6e0" stroke-width="4" stroke-linecap="round"/><path d="M40 60 Q58 60 64 90" fill="none" stroke="#b9a6e0" stroke-width="4" stroke-linecap="round"/><path d="M40 110 Q26 130 20 160" fill="none" stroke="#b9a6e0" stroke-width="4" stroke-linecap="round"/><path d="M40 110 Q54 130 60 160" fill="none" stroke="#b9a6e0" stroke-width="4" stroke-linecap="round"/></svg>
+      </div>
+      <div class="heart-mid" id="heartMid">
+        <div class="heart-still" id="heartStill">❤️</div>
+        <div class="heart-tap-ring" id="heartTapRing"></div>
+        <button class="heart-tap-target" id="heartTapTarget" aria-label="tap my heart"></button>
+      </div>
+      <div class="figure fig-me" id="figMe">
+        <svg viewBox="0 0 80 170"><ellipse cx="40" cy="28" rx="17" ry="18" fill="none" stroke="#f296c0" stroke-width="4"/><line x1="40" y1="46" x2="40" y2="110" stroke="#f296c0" stroke-width="4" stroke-linecap="round"/><path d="M40 62 Q22 66 16 92" fill="none" stroke="#f296c0" stroke-width="4" stroke-linecap="round"/><path d="M40 62 Q58 66 64 92" fill="none" stroke="#f296c0" stroke-width="4" stroke-linecap="round"/><path d="M40 110 Q26 130 20 160" fill="none" stroke="#f296c0" stroke-width="4" stroke-linecap="round"/><path d="M40 110 Q54 130 60 160" fill="none" stroke="#f296c0" stroke-width="4" stroke-linecap="round"/></svg>
+      </div>
+    </div>
+    <div class="tap-prompt" id="tapPrompt">Tap my heart ❤️</div>
+    <div class="final-line" id="finalLine">I love you ❤️<br><span style="font-size:14px; opacity:0.85;">It was just in my heart.</span></div>
+    <button class="next-btn" id="continueBtn" style="display:none;">Continue →</button>
+  </div>
+
+  <!-- Scene 6 -->
+  <div class="scene morning-scene" id="scene6">
+    <div class="sun"></div>
+    <div class="gm-title">Good Morning ❤️</div>
+    <div class="gm-sub">Mission accomplished. Your missing<br>"I love you" has been delivered.<br>Now have a beautiful day. ❤️</div>
+    <div class="gm-mission">delivered at last</div>
+  </div>
+
+  <button class="replay" id="replayBtn" style="display:none">↺ replay</button>
+</div>
+
+<script>
+(function(){
+  const scenes = {
+    1: document.getElementById('scene1'),
+    2: document.getElementById('scene2'),
+    3: document.getElementById('scene3'),
+    45: document.getElementById('scene45'),
+    6: document.getElementById('scene6'),
+  };
+  function showScene(n){
+    Object.values(scenes).forEach(s => s.classList.remove('active'));
+    scenes[n].classList.add('active');
+  }
+
+  const messages = [
+    { from:'her', text:'Good night 🌙' },
+    { from:'me',  text:'Good night 💤' },
+    { from:'her', text:'Toodles 🫶' },
+    { from:'me',  text:'Toodles 🫶' },
+  ];
+
+  const timeline = document.getElementById('timeline');
+  const startBtn = document.getElementById('startBtn');
+  const scene3El = document.getElementById('scene3');
+  const scene3NextBtn = document.getElementById('scene3NextBtn');
+  const accuseText = document.getElementById('accuseText');
+  const duoWrap = document.getElementById('duoWrap');
+  const heartStill = document.getElementById('heartStill');
+  const heartTapTarget = document.getElementById('heartTapTarget');
+  const heartTapRing = document.getElementById('heartTapRing');
+  const tapPrompt = document.getElementById('tapPrompt');
+  const finalLine = document.getElementById('finalLine');
+  const continueBtn = document.getElementById('continueBtn');
+  const replayBtn = document.getElementById('replayBtn');
+
+  function playTimeline(){
+    showScene(2);
+    let i = 0;
+    function next(){
+      if(i >= messages.length){
+        setTimeout(playAccuse, 500);
+        return;
+      }
+      const msg = messages[i];
+      const row = document.createElement('div');
+      row.className = 'bubble-row ' + msg.from;
+      const typing = document.createElement('div');
+      typing.className = 'bubble ' + msg.from;
+      typing.innerHTML = '<span class="typing"><span></span><span></span><span></span></span>';
+      row.appendChild(typing);
+      timeline.appendChild(row);
+      requestAnimationFrame(() => row.classList.add('show'));
+
+      setTimeout(() => {
+        typing.innerHTML = msg.text;
+        i++;
+        setTimeout(next, 650);
+      }, 700);
+    }
+    next();
+  }
+
+  function playAccuse(){
+    showScene(3);
+    document.body.classList.add('angry-bg');
+    scene3El.classList.add('angry');
+    accuseText.classList.add('shake');
+  }
+
+  startBtn.addEventListener('click', playTimeline);
+
+  scene3NextBtn.addEventListener('click', function(){
+    document.body.classList.remove('angry-bg');
+    showScene(45);
+    tapPrompt.style.display = 'flex';
+  });
+
+  heartTapTarget.addEventListener('click', function(){
+    heartTapTarget.style.pointerEvents = 'none';
+    heartTapRing.classList.add('hide');
+    if(navigator.vibrate) navigator.vibrate(30);
+
+    heartStill.classList.add('beat');
+
+    setTimeout(() => {
+      duoWrap.classList.add('fade-out');
+      tapPrompt.classList.add('fade-out');
+    }, 700);
+
+    setTimeout(() => {
+      finalLine.classList.add('show');
+      continueBtn.style.display = 'inline-block';
+    }, 1200);
+  });
+
+  continueBtn.addEventListener('click', function(){
+    showScene(6);
+    replayBtn.style.display = 'block';
+  });
+
+  replayBtn.addEventListener('click', function(){
+    timeline.innerHTML = '';
+    scene3El.classList.remove('angry');
+    document.body.classList.remove('angry-bg');
+    accuseText.classList.remove('shake');
+    void accuseText.offsetWidth;
+    duoWrap.classList.remove('fade-out');
+    heartStill.classList.remove('beat');
+    tapPrompt.classList.remove('fade-out');
+    tapPrompt.style.display = 'none';
+    finalLine.classList.remove('show');
+    heartTapTarget.style.pointerEvents = '';
+    heartTapRing.classList.remove('hide');
+    continueBtn.style.display = 'none';
+    replayBtn.style.display = 'none';
+    showScene(1);
+  });
+})();
+</script>
+
+</body>
+</html>

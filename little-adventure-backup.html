@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>15 Questions — Five Little Adventures</title>
+<style>
+  *{box-sizing:border-box}
+  :root{
+    --bg:#090914;
+    --panel:rgba(255,255,255,.08);
+    --text:#fff8fb;
+    --muted:#b9afc5;
+    --pink:#ff6fae;
+    --purple:#9b7bff;
+    --cyan:#6ee7f9;
+    --yellow:#ffd166;
+  }
+  html,body{margin:0;min-height:100%;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text)}
+  body{overflow-x:hidden}
+  body:before,body:after{
+    content:"";position:fixed;inset:auto;pointer-events:none;z-index:0;
+    width:42vw;height:42vw;border-radius:50%;filter:blur(80px);opacity:.18;
+    animation:orb 12s ease-in-out infinite alternate;
+  }
+  body:before{background:#ff3d9a;top:-12vw;left:-10vw}
+  body:after{background:#635bff;bottom:-15vw;right:-10vw;animation-delay:-5s}
+  @keyframes orb{to{transform:translate(8vw,5vh) scale(1.18)}}
+
+  .app{position:relative;z-index:1;max-width:1100px;margin:auto;padding:28px 20px 60px}
+  header{text-align:center;padding:20px 0 26px}
+  .eyebrow{font-size:.74rem;letter-spacing:.25em;text-transform:uppercase;color:var(--cyan);font-weight:800}
+  h1{font-size:clamp(2.2rem,6vw,4.8rem);line-height:.95;margin:12px 0 12px;letter-spacing:-.06em}
+  .subtitle{color:var(--muted);max-width:620px;margin:auto;font-size:1rem;line-height:1.6}
+  .progress{display:flex;gap:8px;justify-content:center;margin:24px 0 8px}
+  .dot{width:42px;height:7px;border-radius:99px;background:#282431;transition:.5s}
+  .dot.done{background:linear-gradient(90deg,var(--pink),var(--purple))}
+  .round-label{text-align:center;color:#d9d0df;font-size:.85rem;min-height:1.4em}
+
+  .stage{
+    position:relative;min-height:650px;border:1px solid rgba(255,255,255,.1);
+    border-radius:34px;background:rgba(12,11,24,.72);backdrop-filter:blur(18px);
+    box-shadow:0 30px 100px rgba(0,0,0,.45);overflow:hidden;padding:28px;
+  }
+  .stage:before{content:"";position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.06),transparent 35%,rgba(155,123,255,.05));pointer-events:none}
+
+  .round{display:none;position:relative;min-height:590px;animation:enter .7s cubic-bezier(.2,.8,.2,1)}
+  .round.active{display:block}
+  @keyframes enter{from{opacity:0;transform:translateY(25px) scale(.98)}to{opacity:1;transform:none}}
+
+  .round-title{text-align:center;margin:4px 0 5px;font-size:1.35rem}
+  .round-instruction{text-align:center;color:var(--muted);margin:0 auto 24px;max-width:620px}
+
+  /* common question card */
+  .question-card{
+    max-width:720px;margin:28px auto 0;padding:34px 34px 30px;border-radius:28px;
+    background:linear-gradient(145deg,rgba(255,255,255,.12),rgba(255,255,255,.045));
+    border:1px solid rgba(255,255,255,.12);box-shadow:0 22px 70px rgba(0,0,0,.3);
+    transform-origin:center;animation:cardIn .6s cubic-bezier(.2,.9,.2,1);
+  }
+  @keyframes cardIn{from{opacity:0;transform:scale(.75) rotateX(12deg)}to{opacity:1;transform:none}}
+  .qnum{font-size:.75rem;letter-spacing:.2em;text-transform:uppercase;color:var(--pink);font-weight:900}
+  .question{font-size:clamp(1.35rem,3.2vw,2.15rem);line-height:1.25;margin:12px 0 18px;letter-spacing:-.025em}
+  .hint{font-size:.95rem;color:#c7bdcc;line-height:1.6;padding:14px 16px;border-radius:16px;background:rgba(255,255,255,.045)}
+  .reset{border:0;background:none;color:#83798c;cursor:pointer;margin:18px auto;display:block;font-size:.8rem}
+
+  button{font:inherit}
+  .action{
+    display:block;margin:24px auto 0;border:0;border-radius:999px;padding:14px 23px;color:#fff;
+    font-weight:800;cursor:pointer;background:linear-gradient(135deg,var(--pink),var(--purple));
+    box-shadow:0 12px 30px rgba(155,123,255,.25);transition:.2s;position:relative;overflow:hidden;
+  }
+  .action:hover{transform:translateY(-2px);box-shadow:0 16px 38px rgba(255,111,174,.28)}
+  .action:active{transform:translateY(1px)}
+
+  /* Round 1: balloons */
+  .balloon-zone{height:390px;position:relative;margin-top:5px}
+  .balloon{
+    position:absolute;width:86px;height:104px;border-radius:50% 50% 48% 48%;
+    border:0;cursor:pointer;box-shadow:inset -10px -12px 18px rgba(0,0,0,.18),inset 10px 8px 14px rgba(255,255,255,.2),0 15px 30px rgba(0,0,0,.25);
+    animation:float 3s ease-in-out infinite;transition:.2s;
+  }
+  .balloon:after{content:"";position:absolute;width:1px;height:80px;background:rgba(255,255,255,.4);top:96px;left:50%;transform-origin:top;transform:rotate(2deg)}
+  .balloon:before{content:"";position:absolute;bottom:-5px;left:37px;border-left:7px solid transparent;border-right:7px solid transparent;border-top:10px solid currentColor}
+  .balloon:hover{transform:scale(1.12) rotate(4deg)}
+  .b1{left:8%;top:110px;background:#ff6fae;color:#ff6fae;animation-delay:-.4s}.b2{left:27%;top:25px;background:#ffd166;color:#ffd166;animation-delay:-1.3s}.b3{left:48%;top:145px;background:#6ee7f9;color:#6ee7f9;animation-delay:-2s}.b4{right:23%;top:48px;background:#9b7bff;color:#9b7bff;animation-delay:-.8s}.b5{right:6%;top:175px;background:#7ee081;color:#7ee081;animation-delay:-1.7s}
+  @keyframes float{50%{transform:translateY(-18px) rotate(-3deg)}}
+  .popped{animation:pop .28s ease forwards!important}
+  @keyframes pop{50%{transform:scale(1.35);opacity:.7}100%{transform:scale(0);opacity:0}}
+
+  /* Round 2: dice */
+  .dice-area{text-align:center;padding-top:40px}
+  .dice-wrap{perspective:700px;height:170px;display:flex;justify-content:center;align-items:center}
+  .dice{
+    width:110px;height:110px;border-radius:20px;background:linear-gradient(145deg,#fff,#d8d4df);
+    box-shadow:12px 18px 40px rgba(0,0,0,.35),inset 4px 4px 10px rgba(255,255,255,.9);
+    color:#16131c;display:grid;place-items:center;font-size:3.3rem;font-weight:900;
+    cursor:pointer;user-select:none;transition:.2s;
+  }
+  .rolling{animation:roll .75s cubic-bezier(.2,.7,.3,1)}
+  @keyframes roll{0%{transform:rotateX(0) rotateY(0) scale(1)}35%{transform:rotateX(240deg) rotateY(160deg) scale(1.08)}70%{transform:rotateX(520deg) rotateY(300deg) scale(.94)}100%{transform:rotateX(720deg) rotateY(360deg) scale(1)}}
+  .dice-note{color:var(--muted);margin-top:12px}
+
+  /* Round 3: wheel */
+  .wheel-area{text-align:center;padding-top:15px}
+  .wheel-shell{position:relative;width:min(360px,72vw);aspect-ratio:1;margin:22px auto}
+  .wheel{
+    width:100%;height:100%;border-radius:50%;border:10px solid rgba(255,255,255,.9);
+    background:conic-gradient(#ff6fae 0 60deg,#ffd166 60deg 120deg,#6ee7f9 120deg 180deg,#9b7bff 180deg 240deg,#7ee081 240deg 300deg,#ff9f68 300deg 360deg);
+    box-shadow:0 20px 55px rgba(0,0,0,.35),inset 0 0 0 3px rgba(0,0,0,.12);
+    transition:transform 1.5s cubic-bezier(.15,.8,.12,1);
+  }
+  .wheel:after{content:"";position:absolute;inset:31%;border-radius:50%;background:#15121d;border:3px solid rgba(255,255,255,.2)}
+  .pointer{position:absolute;top:-8px;left:50%;transform:translateX(-50%);z-index:2;width:0;height:0;border-left:14px solid transparent;border-right:14px solid transparent;border-top:28px solid #fff;filter:drop-shadow(0 5px 5px rgba(0,0,0,.35))}
+  .spin{margin-top:4px}
+
+  /* Round 4: stars */
+  .sky{height:400px;position:relative;overflow:hidden;border-radius:24px;background:radial-gradient(circle at 50% 50%,rgba(155,123,255,.14),transparent 55%)}
+  .star{position:absolute;width:44px;height:44px;border:0;background:transparent;color:#fff;cursor:pointer;font-size:2rem;filter:drop-shadow(0 0 10px rgba(255,255,255,.65));animation:twinkle 1.8s ease-in-out infinite}
+  .star:hover{transform:scale(1.35) rotate(12deg)}
+  .star:nth-child(1){left:10%;top:25%;animation-delay:-.2s}.star:nth-child(2){left:28%;top:12%;animation-delay:-1s}.star:nth-child(3){left:47%;top:30%;animation-delay:-.7s}.star:nth-child(4){left:67%;top:14%;animation-delay:-1.4s}.star:nth-child(5){right:9%;top:34%;animation-delay:-.4s}
+  @keyframes twinkle{50%{opacity:.35;transform:scale(.75)}}
+  .star.used{opacity:.18;pointer-events:none}
+  .constellation{position:absolute;inset:0;opacity:0;pointer-events:none;transition:.8s}
+  .constellation.show{opacity:1}
+
+  /* Round 5: vault */
+  .vault-area{text-align:center;padding-top:30px}
+  .lock{width:150px;height:150px;border-radius:50%;margin:20px auto;background:conic-gradient(from -20deg,#ff6fae,#9b7bff,#6ee7f9,#ff6fae);padding:8px;box-shadow:0 20px 50px rgba(0,0,0,.4)}
+  .lock-inner{width:100%;height:100%;border-radius:50%;background:#11101a;display:grid;place-items:center;border:1px solid rgba(255,255,255,.15)}
+  .lock-num{font-size:2.6rem;font-weight:900}
+  .keypad{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;max-width:370px;margin:22px auto}
+  .key{width:54px;height:54px;border-radius:16px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.07);color:#fff;cursor:pointer;font-weight:800;transition:.18s}
+  .key:hover{background:rgba(255,255,255,.15);transform:translateY(-2px)}
+  .key:active{transform:scale(.94)}
+  .vault-hint{color:var(--muted);font-size:.9rem}
+  .shake{animation:shake .35s}
+  @keyframes shake{25%{transform:translateX(-9px)}50%{transform:translateX(9px)}75%{transform:translateX(-6px)}}
+
+  .ending-message{text-align:center;margin:26px auto 4px;padding:22px 18px;border-radius:22px;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.08)}
+  .ending-emoji{font-size:2rem;margin-bottom:8px}
+  .ending-title{font-size:1.35rem;font-weight:900;margin-bottom:7px}
+  .ending-text{color:var(--muted);line-height:1.6;max-width:520px;margin:auto}
+  .footer{text-align:center;color:#6e6675;font-size:.78rem;margin-top:18px}
+  @media(max-width:650px){
+    .app{padding:16px 12px 35px}.stage{padding:18px;border-radius:26px}.balloon-zone{height:360px}
+    .balloon{width:68px;height:84px}.balloon:after{height:65px;top:78px}.balloon:before{left:28px}
+    .question-card{padding:25px 22px}.star{font-size:1.7rem}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="eyebrow">15 questions · 5 rounds · no boring answers</div>
+    <h1>Five Little Adventures</h1>
+    <p class="subtitle">A tiny game for two people who are still figuring each other out. Each round hides three possible questions — but only ONE gets revealed.</p>
+    <div class="progress" id="progress"></div>
+    <div class="round-label" id="roundLabel"></div>
+  </header>
+
+  <main class="stage">
+    <!-- ROUND 1 -->
+    <section class="round active" id="round1">
+      <h2 class="round-title">Round 1 · Pop a balloon 🎈</h2>
+      <p class="round-instruction">Pick any balloon. One question is hiding inside — and that’s the only question you get this round.</p>
+      <div class="balloon-zone">
+        <button class="balloon b1" onclick="balloon(1)" aria-label="Balloon"></button>
+        <button class="balloon b2" onclick="balloon(2)" aria-label="Balloon"></button>
+        <button class="balloon b3" onclick="balloon(3)" aria-label="Balloon"></button>
+        <button class="balloon b4" onclick="balloon(4)" aria-label="Balloon"></button>
+        <button class="balloon b5" onclick="balloon(5)" aria-label="Balloon"></button>
+      </div>
+      <div id="q1"></div>
+    </section>
+
+    <!-- ROUND 2 -->
+    <section class="round" id="round2">
+      <h2 class="round-title">Round 2 · Roll the dice 🎲</h2>
+      <p class="round-instruction">Roll once. The dice decides which question you get.</p>
+      <div class="dice-area">
+        <div class="dice-wrap"><div class="dice" id="dice" onclick="rollDice()">?</div></div>
+        <div class="dice-note" id="diceNote">Tap the dice.</div>
+      </div>
+      <div id="q2"></div>
+    </section>
+
+    <!-- ROUND 3 -->
+    <section class="round" id="round3">
+      <h2 class="round-title">Round 3 · Spin the wheel 🎡</h2>
+      <p class="round-instruction">The wheel decides which question you get. One spin. No rerolls.</p>
+      <div class="wheel-area">
+        <div class="wheel-shell"><div class="pointer"></div><div class="wheel" id="wheel"></div></div>
+        <button class="action spin" onclick="spinWheel()">SPIN</button>
+      </div>
+      <div id="q3"></div>
+    </section>
+
+    <!-- ROUND 4 -->
+    <section class="round" id="round4">
+      <h2 class="round-title">Round 4 · Find a star ✨</h2>
+      <p class="round-instruction">Five stars. One hides your question. The others are decoys. Choose wisely.</p>
+      <div class="sky" id="sky">
+        <button class="star" onclick="star(1)">✦</button>
+        <button class="star" onclick="star(2)">✦</button>
+        <button class="star" onclick="star(3)">✦</button>
+        <button class="star" onclick="star(4)">✦</button>
+        <button class="star" onclick="star(5)">✦</button>
+        <div class="constellation" id="constellation">✧　·　✦　·　✧</div>
+      </div>
+      <div id="q4"></div>
+    </section>
+
+    <!-- ROUND 5 -->
+    <section class="round" id="round5">
+      <h2 class="round-title">Round 5 · The tiny vault 🔐</h2>
+      <p class="round-instruction">Enter a number from 1–5. The vault decides which final question you get.</p>
+      <div class="vault-area">
+        <div class="lock" id="lock"><div class="lock-inner"><div class="lock-num" id="lockNum">?</div></div></div>
+        <div class="keypad">
+          <button class="key" onclick="key(1)">1</button><button class="key" onclick="key(2)">2</button><button class="key" onclick="key(3)">3</button>
+          <button class="key" onclick="key(4)">4</button><button class="key" onclick="key(5)">5</button>
+        </div>
+        <div class="vault-hint">There is no wrong choice. Probably.</div>
+      </div>
+      <div id="q5"></div>
+    </section>
+  </main>
+  <div class="footer">Tip: both answer the question. The fun part is the follow-up.</div>
+</div>
+
+<script>
+const questions = {
+  1: [
+    {q:"What’s one thing you want me to do the next time we meet?", h:"And you’re not allowed to say “hug you.” 😌"},
+    {q:"What animal do you think best represents my personality?", h:"Explain your choice — “because you’re cute” doesn’t count."},
+    {q:"If you could erase one embarrassing moment from your life, what would it be?", h:"Bonus: tell me one you’d NEVER erase because it’s too funny."}
+  ],
+  2: [
+    {q:"If our relationship was a Netflix show/movie, what would it be called?", h:"Genre, title, and who would play us."},
+    {q:"What’s something about you that takes people a long time to understand?", h:"The answer cannot be “I’m complicated.” 😂"},
+    {q:"What’s something you wish you were better at expressing?", h:"And no, “my feelings” is not enough of an answer 😂"}
+  ],
+  3: [
+    {q:"What makes you feel loved without someone actually saying “I love you”?", h:"Think small things, not grand gestures."},
+    {q:"What’s something you thought about me initially that turned out to be completely wrong?", h:"Be honest. I promise I’ll try not to take it personally."},
+    {q:"You get one free question about me and I HAVE to answer honestly. Go.", h:"You only get ONE, so choose wisely."}
+  ],
+  4: [
+    {q:"If we could teleport anywhere right now, where are we going?", h:"But you have to plan our first 3 hours there."},
+    {q:"What’s one dream you’d genuinely want to experience with your partner someday?", h:"Could be romantic, stupid, adventurous, anything."},
+    {q:"How will our typical day look like?", h:"From waking up to going to bed — make it realistic, chaotic, or completely ideal."}
+  ],
+  5: [
+    {q:"Rank these from most to least attractive: Confidence, Intelligence, Kindness, Ambition, Humor.", h:"No ties allowed. Then defend your #1 and your last place."},
+    {q:"Choose for a boring date: cook together or go somewhere fancy?", h:"You have to pick one — and convince me why the other option loses."},
+    {q:"We move in together tomorrow. You pick the city, I pick the house, you pick our pet, I pick our terrible shared hobby.", h:"You have 60 seconds to build our objectively questionable life."}
+  ]
+};
+
+let revealed = Array(6).fill(false);
+let round=1;
+
+function init(){
+  const p=document.getElementById("progress");
+  for(let i=1;i<=5;i++){const d=document.createElement("div");d.className="dot";d.id="dot"+i;p.appendChild(d)}
+  updateHeader();
+}
+function updateHeader(){
+  document.getElementById("roundLabel").textContent = `Round ${round} of 5`;
+  for(let i=1;i<=5;i++) document.getElementById("dot"+i).classList.toggle("done",i<round);
+}
+function showQ(r,index){
+  if(revealed[r]) return;
+  const box=document.getElementById("q"+r);
+  const item=questions[r][index];
+  box.innerHTML=`<article class="question-card">
+    <div class="qnum">Your question · Round ${r}</div>
+    <div class="question">${item.q}</div>
+    <div class="hint">${item.h}</div>
+    <button class="action" onclick="nextRound(${r})">NEXT ROUND →</button>
+  </article>`;
+  revealed[r]=true;
+}
+function nextRound(r){
+  if(round !== r) return;
+  if(r<5){
+    round=r+1;
+    document.querySelectorAll(".round").forEach(x=>x.classList.remove("active"));
+    document.getElementById("round"+round).classList.add("active");
+    updateHeader();
+  } else {
+    document.getElementById("roundLabel").textContent="All 5 rounds complete ✨";
+    document.querySelectorAll(".dot").forEach(x=>x.classList.add("done"));
+
+    const box=document.getElementById("q5");
+    const card=box.querySelector(".question-card");
+    if(card){
+      const button=card.querySelector(".action");
+      if(button) button.remove();
+
+      const ending=document.createElement("div");
+      ending.className="ending-message";
+      ending.innerHTML=`<div class="ending-emoji">🫶</div>
+        <div class="ending-title">Okay, bss kar bhai 😂</div>
+        <div class="ending-text">You survived all 5 rounds. Now go talk to each other instead of pressing buttons. ❤️</div>`;
+      card.appendChild(ending);
+    }
+  }
+}
+
+function balloon(n){
+  if(revealed[1]) return;
+  const btn=document.querySelectorAll(".balloon")[n-1];
+  btn.classList.add("popped");
+  showQ(1,(n-1)%3);
+}
+function rollDice(){
+  if(revealed[2]) return;
+  const d=document.getElementById("dice");
+  d.classList.remove("rolling"); void d.offsetWidth; d.classList.add("rolling");
+  d.textContent="•";
+  setTimeout(()=>{
+    const result=Math.floor(Math.random()*3);
+    d.textContent=result+1;
+    document.getElementById("diceNote").textContent="The dice has spoken.";
+    showQ(2,result);
+  },720);
+}
+let wheelTurns=0;
+function spinWheel(){
+  if(revealed[3]) return;
+  wheelTurns++;
+  const result=Math.floor(Math.random()*3);
+  const wheel=document.getElementById("wheel");
+  wheel.style.transform=`rotate(${wheelTurns*720 + result*120 + 20}deg)`;
+  setTimeout(()=>showQ(3,result),1250);
+}
+function star(n){
+  if(revealed[4]) return;
+  const el=document.querySelectorAll(".star")[n-1];
+  if(el.classList.contains("used")) return;
+  el.classList.add("used");
+  // Only one of the five stars is the real one this round.
+  if(n===3){
+    showQ(4,Math.floor(Math.random()*3));
+  } else {
+    el.textContent="·";
+    document.getElementById("constellation").classList.add("show");
+    setTimeout(()=>document.getElementById("constellation").classList.remove("show"),600);
+  }
+}
+function key(n){
+  if(revealed[5]) return;
+  const lock=document.getElementById("lock");
+  const num=document.getElementById("lockNum");
+  num.textContent=n;
+  lock.classList.remove("shake"); void lock.offsetWidth;
+  showQ(5,(n-1)%3);
+}
+init();
+</script>
+</body>
+</html>
