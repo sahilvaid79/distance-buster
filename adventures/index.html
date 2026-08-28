@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>15 Questions — Five Little Adventures</title>
+<title>Five Little Adventures</title>
 <style>
   *{box-sizing:border-box}
   :root{
@@ -26,6 +26,11 @@
   body:before{background:#ff3d9a;top:-12vw;left:-10vw}
   body:after{background:#635bff;bottom:-15vw;right:-10vw;animation-delay:-5s}
   @keyframes orb{to{transform:translate(8vw,5vh) scale(1.18)}}
+
+  .home-btn{position:fixed;top:18px;left:18px;z-index:20;display:inline-flex;align-items:center;gap:6px;
+    color:var(--muted);text-decoration:none;font-size:.85rem;font-weight:700;padding:9px 15px;border-radius:999px;
+    background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);backdrop-filter:blur(10px);transition:.2s}
+  .home-btn:hover{color:#fff;background:rgba(255,255,255,.15);transform:translateY(-1px)}
 
   .app{position:relative;z-index:1;max-width:1100px;margin:auto;padding:28px 20px 60px}
   header{text-align:center;padding:20px 0 26px}
@@ -62,13 +67,14 @@
   .qnum{font-size:.75rem;letter-spacing:.2em;text-transform:uppercase;color:var(--pink);font-weight:900}
   .question{font-size:clamp(1.35rem,3.2vw,2.15rem);line-height:1.25;margin:12px 0 18px;letter-spacing:-.025em}
   .hint{font-size:.95rem;color:#c7bdcc;line-height:1.6;padding:14px 16px;border-radius:16px;background:rgba(255,255,255,.045)}
-  .reset{border:0;background:none;color:#83798c;cursor:pointer;margin:18px auto;display:block;font-size:.8rem}
+  .reset{border:0;background:none;color:#83798c;cursor:pointer;margin:18px auto;display:block;font-size:.8rem;text-decoration:none}
 
   button{font:inherit}
   .action{
     display:block;margin:24px auto 0;border:0;border-radius:999px;padding:14px 23px;color:#fff;
     font-weight:800;cursor:pointer;background:linear-gradient(135deg,var(--pink),var(--purple));
     box-shadow:0 12px 30px rgba(155,123,255,.25);transition:.2s;position:relative;overflow:hidden;
+    text-decoration:none;text-align:center;width:fit-content;
   }
   .action:hover{transform:translateY(-2px);box-shadow:0 16px 38px rgba(255,111,174,.28)}
   .action:active{transform:translateY(1px)}
@@ -118,7 +124,6 @@
   .sky{height:400px;position:relative;overflow:hidden;border-radius:24px;background:radial-gradient(circle at 50% 50%,rgba(155,123,255,.14),transparent 55%)}
   .star{position:absolute;width:44px;height:44px;border:0;background:transparent;color:#fff;cursor:pointer;font-size:2rem;filter:drop-shadow(0 0 10px rgba(255,255,255,.65));animation:twinkle 1.8s ease-in-out infinite}
   .star:hover{transform:scale(1.35) rotate(12deg)}
-  .star:nth-child(1){left:10%;top:25%;animation-delay:-.2s}.star:nth-child(2){left:28%;top:12%;animation-delay:-1s}.star:nth-child(3){left:47%;top:30%;animation-delay:-.7s}.star:nth-child(4){left:67%;top:14%;animation-delay:-1.4s}.star:nth-child(5){right:9%;top:34%;animation-delay:-.4s}
   @keyframes twinkle{50%{opacity:.35;transform:scale(.75)}}
   .star.used{opacity:.18;pointer-events:none}
   .constellation{position:absolute;inset:0;opacity:0;pointer-events:none;transition:.8s}
@@ -137,18 +142,20 @@
   .shake{animation:shake .35s}
   @keyframes shake{25%{transform:translateX(-9px)}50%{transform:translateX(9px)}75%{transform:translateX(-6px)}}
 
+
   .footer{text-align:center;color:#6e6675;font-size:.78rem;margin-top:18px}
   @media(max-width:650px){
     .app{padding:16px 12px 35px}.stage{padding:18px;border-radius:26px}.balloon-zone{height:360px}
     .balloon{width:68px;height:84px}.balloon:after{height:65px;top:78px}.balloon:before{left:28px}
-    .question-card{padding:25px 22px}.star{font-size:1.7rem}
+    .question-card{padding:25px 22px}.star{font-size:1.7rem}.home-btn{top:12px;left:12px;padding:7px 12px;font-size:.78rem}
   }
 </style>
 </head>
 <body>
+<a class="home-btn" href="../index.html">← Home</a>
 <div class="app">
   <header>
-    <div class="eyebrow">15 questions · 5 rounds · no boring answers</div>
+    <div class="eyebrow">a few questions · 5 rounds · no boring answers</div>
     <h1>Five Little Adventures</h1>
     <p class="subtitle">A tiny game for two people who are still figuring each other out. Each round hides three possible questions — but only ONE gets revealed.</p>
     <div class="progress" id="progress"></div>
@@ -195,13 +202,16 @@
     <!-- ROUND 4 -->
     <section class="round" id="round4">
       <h2 class="round-title">Round 4 · Find a star ✨</h2>
-      <p class="round-instruction">Five stars. One hides your question. The others are decoys. Choose wisely.</p>
+      <p class="round-instruction">A whole sky of stars. Only one hides your question. The rest are decoys. Choose wisely.</p>
       <div class="sky" id="sky">
         <button class="star" onclick="star(1)">✦</button>
         <button class="star" onclick="star(2)">✦</button>
         <button class="star" onclick="star(3)">✦</button>
         <button class="star" onclick="star(4)">✦</button>
         <button class="star" onclick="star(5)">✦</button>
+        <button class="star" onclick="star(6)">✦</button>
+        <button class="star" onclick="star(7)">✦</button>
+        <button class="star" onclick="star(8)">✦</button>
         <div class="constellation" id="constellation">✧　·　✦　·　✧</div>
       </div>
       <div id="q4"></div>
@@ -220,6 +230,15 @@
         <div class="vault-hint">There is no wrong choice. Probably.</div>
       </div>
       <div id="q5"></div>
+    </section>
+
+    <!-- FINAL SCREEN -->
+    <section class="round" id="roundFinal">
+      <article class="question-card" style="text-align:center">
+        <div class="qnum">That's a wrap</div>
+        <div class="question">bss kr bhai 🙄</div>
+        <div class="hint">Ab thoda baat kar lo.</div>
+      </article>
     </section>
   </main>
   <div class="footer">Tip: both answer the question. The fun part is the follow-up.</div>
@@ -245,7 +264,9 @@ const questions = {
   4: [
     {q:"If we could teleport anywhere right now, where are we going?", h:"But you have to plan our first 3 hours there."},
     {q:"What’s one dream you’d genuinely want to experience with your partner someday?", h:"Could be romantic, stupid, adventurous, anything."},
-    {q:"How will our typical day look like?", h:"From waking up to going to bed — make it realistic, chaotic, or completely ideal."}
+    {q:"How will our typical day look like?", h:"From waking up to going to bed — make it realistic, chaotic, or completely ideal."},
+    {q:"What’s a small thing I do that makes your day better, even if I never mention it?", h:"Get specific — vague answers don’t count."},
+    {q:"If you had to describe us in three emojis, what would they be?", h:"No repeating the same emoji three times."}
   ],
   5: [
     {q:"Rank these from most to least attractive: Confidence, Intelligence, Kindness, Ambition, Humor.", h:"No ties allowed. Then defend your #1 and your last place."},
@@ -261,6 +282,27 @@ function init(){
   const p=document.getElementById("progress");
   for(let i=1;i<=5;i++){const d=document.createElement("div");d.className="dot";d.id="dot"+i;p.appendChild(d)}
   updateHeader();
+  placeStarsRandomly();
+}
+function placeStarsRandomly(){
+  const stars=document.querySelectorAll(".star");
+  const cols=4, rows=2;
+  const cells=[];
+  for(let r=0;r<rows;r++) for(let c=0;c<cols;c++) cells.push({c,r});
+  // shuffle cells so stars land in random cells, then jitter within each cell
+  for(let i=cells.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [cells[i],cells[j]]=[cells[j],cells[i]];
+  }
+  stars.forEach((el,i)=>{
+    const cell=cells[i%cells.length];
+    const cellW=100/cols, cellH=100/rows;
+    const left=cell.c*cellW + 6 + Math.random()*(cellW-18);
+    const top=cell.r*cellH + 8 + Math.random()*(cellH-24);
+    el.style.left=left+"%";
+    el.style.top=top+"%";
+    el.style.animationDelay=(-Math.random()*2).toFixed(2)+"s";
+  });
 }
 function updateHeader(){
   document.getElementById("roundLabel").textContent = `Round ${round} of 5`;
@@ -274,7 +316,7 @@ function showQ(r,index){
     <div class="qnum">Your question · Round ${r}</div>
     <div class="question">${item.q}</div>
     <div class="hint">${item.h}</div>
-    <button class="action" onclick="nextRound(${r})">NEXT ROUND →</button>
+    <button class="action" onclick="nextRound(${r})">${r<5?"NEXT ROUND →":"NEXT →"}</button>
   </article>`;
   revealed[r]=true;
 }
@@ -286,9 +328,14 @@ function nextRound(r){
     document.getElementById("round"+round).classList.add("active");
     updateHeader();
   } else {
-    document.getElementById("roundLabel").textContent="All 5 rounds complete ✨";
-    document.querySelectorAll(".dot").forEach(x=>x.classList.add("done"));
+    showFinal();
   }
+}
+function showFinal(){
+  document.getElementById("roundLabel").textContent="All done ✨";
+  document.querySelectorAll(".dot").forEach(x=>x.classList.add("done"));
+  document.querySelectorAll(".round").forEach(x=>x.classList.remove("active"));
+  document.getElementById("roundFinal").classList.add("active");
 }
 
 function balloon(n){
@@ -318,14 +365,14 @@ function spinWheel(){
   wheel.style.transform=`rotate(${wheelTurns*720 + result*120 + 20}deg)`;
   setTimeout(()=>showQ(3,result),1250);
 }
+const realStar = Math.floor(Math.random()*8)+1; // picked fresh each page load; only this one star reveals a question
 function star(n){
   if(revealed[4]) return;
   const el=document.querySelectorAll(".star")[n-1];
   if(el.classList.contains("used")) return;
   el.classList.add("used");
-  // Only one of the five stars is the real one this round.
-  if(n===3){
-    showQ(4,Math.floor(Math.random()*3));
+  if(n===realStar){
+    showQ(4,Math.floor(Math.random()*questions[4].length));
   } else {
     el.textContent="·";
     document.getElementById("constellation").classList.add("show");
