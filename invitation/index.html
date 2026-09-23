@@ -681,8 +681,8 @@ function acceptInvitation(){
     return;
   }
 
-  // Track accept count
-  trackAccept();
+  // Notify by email (fire and forget)
+  sendAcceptEmail(getSelectedTime());
 
   // Hide everything except the invitation card
   document.querySelector('header').classList.add('hidden');
@@ -698,25 +698,19 @@ function acceptInvitation(){
   document.querySelectorAll('.btn').forEach(btn => btn.disabled = true);
 }
 
-// Track accept count (stored in localStorage)
-function trackAccept(){
-  let count = parseInt(localStorage.getItem('invitationAccepts') || '0');
-  count++;
-  localStorage.setItem('invitationAccepts', count);
+// Notify by email via Web3Forms (fire and forget, no UI feedback)
+const WEB3FORMS_ACCESS_KEY = '5a50431a-d740-4dbc-b51b-0c6f389daaba';
 
-  // Save to history
-  let history = JSON.parse(localStorage.getItem('invitationHistory') || '[]');
-  history.push({
-    time: getSelectedTime(),
-    timestamp: new Date().toISOString(),
-    count: count
-  });
-  localStorage.setItem('invitationHistory', JSON.stringify(history));
-
-  // Log to console
-  console.log('Total accepts:', count);
-  console.log('Timestamp:', new Date().toISOString());
-  console.log('Selected time:', getSelectedTime());
+function sendAcceptEmail(time){
+  fetch('https://api.web3forms.com/submit', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+    body: JSON.stringify({
+      access_key: WEB3FORMS_ACCESS_KEY,
+      subject: 'Invitation accepted! ✨',
+      message: `Time selected: ${time}\nWhen: ${new Date().toLocaleString()}`
+    })
+  }).catch(() => {});
 }
 
 // Setup reject button for mouse and touch
@@ -765,12 +759,6 @@ function setupRejectButton(){
 function trackRejectAttempt(count){
   console.log('Reject attempts:', count);
 }
-
-// Load stored accept count from localStorage when page loads
-window.addEventListener('load', () => {
-  const count = localStorage.getItem('invitationAccepts') || '0';
-  console.log('Page loaded - Total accepts from this browser:', count);
-});
 
 </script>
 
