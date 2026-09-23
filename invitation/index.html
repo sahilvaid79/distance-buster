@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ni Hao - An Invitation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:ital@0;1&display=swap" rel="stylesheet">
+
+<style>
+  *{box-sizing:border-box}
+
+  :root{
+    --bg:#090914;
+    --text:#fff8fb;
+    --muted:#b9afc5;
+    --pink:#ff6fae;
+    --purple:#9b7bff;
+    --cyan:#6ee7f9;
+    --yellow:#ffd166;
+  }
+
+  html,body{
+    margin:0;
+    min-height:100%;
+    font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    background:var(--bg);
+    color:var(--text)
+  }
+
+  body{
+    overflow-x:hidden
+  }
+
+  body:before,
+  body:after{
+    content:"";
+    position:fixed;
+    pointer-events:none;
+    z-index:0;
+    width:42vw;
+    height:42vw;
+    border-radius:50%;
+    filter:blur(80px);
+    opacity:.18;
+    animation:orb 12s ease-in-out infinite alternate;
+  }
+
+  body:before{
+    background:#ff3d9a;
+    top:-12vw;
+    left:-10vw
+  }
+
+  body:after{
+    background:#635bff;
+    bottom:-15vw;
+    right:-10vw;
+    animation-delay:-5s
+  }
+
+  @keyframes orb{
+    to{
+      transform:translate(8vw,5vh) scale(1.18)
+    }
+  }
+
+  .home-btn{
+    position:fixed;
+    top:18px;
+    left:18px;
+    z-index:30;
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    color:var(--muted);
+    text-decoration:none;
+    font-size:.85rem;
+    font-weight:700;
+    padding:9px 15px;
+    border-radius:999px;
+    background:rgba(255,255,255,.07);
+    border:1px solid rgba(255,255,255,.12);
+    backdrop-filter:blur(10px);
+    transition:.2s
+  }
+
+  .home-btn:hover{
+    color:#fff;
+    background:rgba(255,255,255,.15);
+    transform:translateY(-1px)
+  }
+
+  .app{
+    position:relative;
+    z-index:1;
+    max-width:560px;
+    margin:auto;
+    padding:70px 20px 50px
+  }
+
+  header{
+    text-align:center;
+    padding:10px 0 22px
+  }
+
+  .eyebrow{
+    font-size:.7rem;
+    letter-spacing:.2em;
+    text-transform:uppercase;
+    color:var(--cyan);
+    font-weight:800
+  }
+
+  h1{
+    font-size:clamp(2rem,6vw,3rem);
+    letter-spacing:-.04em;
+    line-height:1;
+    margin:12px 0 8px
+  }
+
+  .chinese{
+    font-size:.65em;
+    color:var(--cyan);
+    display:block;
+    margin-top:4px;
+    font-weight:500
+  }
+
+  .subtitle{
+    color:var(--muted);
+    font-size:.95rem;
+    line-height:1.55
+  }
+
+  .date-display{
+    font-size:.85rem;
+    color:var(--cyan);
+    font-weight:700;
+    margin-top:12px;
+    letter-spacing:.05em
+  }
+
+  .container{
+    margin-top:28px
+  }
+
+  .initial-prompt{
+    text-align:center;
+    padding:20px 0
+  }
+
+  .btn-primary{
+    background:linear-gradient(135deg,var(--pink),var(--purple));
+    color:#fff;
+    padding:16px 32px;
+    border-radius:16px;
+    border:none;
+    font-weight:800;
+    font-size:1rem;
+    cursor:pointer;
+    transition:.2s;
+    display:inline-block
+  }
+
+  .btn-primary:hover{
+    transform:translateY(-3px);
+    box-shadow:0 8px 24px rgba(255,111,174,.3)
+  }
+
+  .details-section{
+    opacity:1;
+    transition:.4s ease
+  }
+
+  .details-section.hidden,
+  #initialState.hidden,
+  header.hidden{
+    display:none;
+    opacity:0
+  }
+
+  .section-label{
+    font-size:.75rem;
+    letter-spacing:.2em;
+    text-transform:uppercase;
+    color:var(--pink);
+    font-weight:800;
+    margin-bottom:12px;
+    display:block;
+    text-align:center
+  }
+
+  .slots{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+    margin-bottom:28px;
+    max-width:400px;
+    margin-left:auto;
+    margin-right:auto
+  }
+
+  .slot{
+    padding:16px;
+    border-radius:16px;
+    border:2px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.05);
+    cursor:pointer;
+    transition:.2s;
+    text-align:center;
+    position:relative
+  }
+
+  .slot:hover{
+    border-color:var(--pink);
+    background:rgba(255,111,174,.1)
+  }
+
+  .slot.selected{
+    border-color:var(--pink);
+    background:linear-gradient(135deg,rgba(255,111,174,.2),rgba(155,123,255,.15));
+    box-shadow:0 0 20px rgba(255,111,174,.2)
+  }
+
+  .slot-time{
+    font-weight:800;
+    font-size:1.05rem;
+  }
+
+  .slot-dash{
+    font-size:.85rem;
+    color:var(--muted);
+    margin:2px 0
+  }
+
+  .slot-end{
+    font-weight:800;
+    font-size:1.05rem;
+  }
+
+  .timeline{
+    padding:20px;
+    border-radius:18px;
+    background:rgba(255,255,255,.06);
+    border:1px solid rgba(255,255,255,.12);
+    margin-bottom:24px;
+    max-width:400px;
+    margin-left:auto;
+    margin-right:auto
+  }
+
+  .timeline-title{
+    font-weight:800;
+    font-size:.95rem;
+    margin-bottom:14px;
+    color:var(--text)
+  }
+
+  .timeline-item{
+    display:flex;
+    align-items:flex-start;
+    gap:10px;
+    margin-bottom:10px;
+    font-size:.88rem
+  }
+
+  .timeline-item:last-child{
+    margin-bottom:0
+  }
+
+  .timeline-dot{
+    width:8px;
+    height:8px;
+    border-radius:50%;
+    background:var(--cyan);
+    margin-top:5px;
+    flex-shrink:0
+  }
+
+  .timeline-content{
+    flex:1
+  }
+
+  .timeline-label{
+    font-weight:700;
+    color:var(--text)
+  }
+
+  .timeline-time{
+    color:var(--muted);
+    font-size:.82rem
+  }
+
+  .buttons{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+    margin-top:24px;
+    max-width:400px;
+    margin-left:auto;
+    margin-right:auto
+  }
+
+  .btn{
+    padding:14px 20px;
+    border-radius:14px;
+    border:2px solid transparent;
+    font-weight:800;
+    font-size:.92rem;
+    cursor:pointer;
+    transition:.2s;
+    position:relative;
+    overflow:hidden
+  }
+
+  .btn-accept{
+    background:linear-gradient(135deg,var(--pink),var(--purple));
+    color:#fff;
+    border-color:transparent
+  }
+
+  .btn-accept:hover{
+    transform:translateY(-2px);
+    box-shadow:0 6px 20px rgba(255,111,174,.3)
+  }
+
+  .btn-reject{
+    background:rgba(255,255,255,.08);
+    color:var(--text);
+    border-color:rgba(255,255,255,.2);
+    padding:14px 20px;
+  }
+
+  .btn-reject:hover{
+    background:rgba(255,255,255,.12);
+    border-color:var(--muted)
+  }
+
+  .reject-hint{
+    position:fixed;
+    bottom:20px;
+    left:50%;
+    transform:translateX(-50%);
+    font-size:.75rem;
+    color:var(--muted);
+    opacity:0;
+    transition:.2s;
+    pointer-events:none;
+    z-index:20
+  }
+
+  .reject-hint.show{
+    opacity:1
+  }
+
+  .success-state{
+    display:none;
+    text-align:center;
+    margin-top:48px
+  }
+
+  .success-state.show{
+    display:block;
+    animation:popIn .5s ease
+  }
+
+  @keyframes popIn{
+    from{
+      opacity:0;
+      transform:scale(.94) translateY(10px)
+    }
+    to{
+      opacity:1;
+      transform:scale(1) translateY(0)
+    }
+  }
+
+  .time-selected-box{
+    padding:20px;
+    border-radius:16px;
+    background:rgba(255,255,255,.06);
+    border:1px solid rgba(255,111,174,.3);
+    text-align:center;
+    max-width:300px;
+    margin-left:auto;
+    margin-right:auto
+  }
+
+  .time-selected{
+    font-weight:800;
+    font-size:1.4rem;
+    color:var(--cyan)
+  }
+
+  .invitation-card{
+    position:relative;
+    background:linear-gradient(165deg,rgba(255,255,255,.07),rgba(255,255,255,.02));
+    border:1px solid rgba(255,111,174,.35);
+    border-radius:26px;
+    padding:52px 36px 40px;
+    text-align:center;
+    max-width:380px;
+    margin:0 auto;
+    box-shadow:0 20px 60px rgba(0,0,0,.35)
+  }
+
+  .card-signature{
+    position:absolute;
+    top:14px;
+    right:26px;
+    font-family:'Great Vibes',cursive;
+    font-size:2rem;
+    color:var(--pink);
+    opacity:.85
+  }
+
+  .card-message{
+    font-family:'Playfair Display',Georgia,serif;
+    font-style:italic;
+    font-size:1.15rem;
+    color:var(--text);
+    line-height:1.5;
+    margin-bottom:30px;
+    padding:0 6px
+  }
+
+  .card-time{
+    font-weight:900;
+    font-size:2.6rem;
+    color:var(--cyan);
+    letter-spacing:.01em;
+    line-height:1;
+    margin-bottom:16px
+  }
+
+  .card-destination{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:12px;
+    color:var(--muted);
+    font-size:.78rem;
+    letter-spacing:.16em;
+    text-transform:uppercase;
+    font-weight:700
+  }
+
+  .dest-line{
+    height:1px;
+    width:28px;
+    background:rgba(255,255,255,.22)
+  }
+
+  .home-link{
+    display:inline-block;
+    margin-top:32px;
+    color:var(--muted);
+    text-decoration:none;
+    font-size:.82rem;
+    font-weight:700;
+    padding:11px 22px;
+    border-radius:999px;
+    border:1px solid rgba(255,255,255,.15);
+    transition:.2s
+  }
+
+  .home-link:hover{
+    color:#fff;
+    background:rgba(255,255,255,.08);
+    border-color:rgba(255,255,255,.3)
+  }
+
+  @media(max-width:600px){
+    .app{
+      padding:62px 14px 36px;
+      max-width:100%
+    }
+    .slots,
+    .buttons,
+    .timeline{
+      max-width:100%;
+      margin-left:0;
+      margin-right:0
+    }
+    .slot{
+      font-size:.9rem
+    }
+    h1{
+      font-size:clamp(1.7rem,6vw,2.5rem)
+    }
+    .invitation-card{
+      padding:44px 22px 34px
+    }
+    .card-time{
+      font-size:2.1rem
+    }
+    .card-signature{
+      font-size:1.6rem;
+      top:10px;
+      right:18px
+    }
+  }
+</style>
+</head>
+
+<body>
+
+<a class="home-btn" href="../index.html">← Home</a>
+
+<div class="app">
+
+  <header>
+    <div class="eyebrow">
+      ✨ a special invitation ✨
+    </div>
+    <h1>
+      Ni Hao <span class="chinese">你好</span>
+    </h1>
+    <p class="subtitle">
+      I'd like to spend some intentional time with you.
+    </p>
+    <div class="date-display" id="dateDisplay">
+      Today
+    </div>
+  </header>
+
+  <div class="container">
+    <!-- Initial State -->
+    <div id="initialState" class="initial-prompt">
+      <button class="btn btn-primary" onclick="showWhen()">
+        When? ⏰
+      </button>
+    </div>
+
+    <!-- Time Slot Section (Hidden initially) -->
+    <div id="whenSection" class="details-section hidden">
+      <span class="section-label">choose a time</span>
+      <div class="slots">
+        <div class="slot" onclick="selectSlot(0)">
+          <div class="slot-time">10:40</div>
+          <div class="slot-dash">–</div>
+          <div class="slot-end">11:00</div>
+        </div>
+        <div class="slot" onclick="selectSlot(1)">
+          <div class="slot-time">11:00</div>
+          <div class="slot-dash">–</div>
+          <div class="slot-end">11:20</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Selected Time Display -->
+    <div id="selectedTimeDisplay" class="details-section hidden">
+      <span class="section-label">selected</span>
+      <div class="time-selected-box">
+        <div id="selectedTimeText" class="time-selected">—</div>
+      </div>
+    </div>
+
+    <!-- Why Section (Hidden until slot selected) -->
+    <div id="whySection" class="details-section hidden">
+      <span class="section-label">here's why</span>
+      <div class="timeline">
+      <div class="timeline-title">📋 Our Agenda</div>
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div class="timeline-content">
+          <div class="timeline-label">💬 Small Talk</div>
+          <div class="timeline-time">2 minutes</div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div class="timeline-content">
+          <div class="timeline-label">🤔 Serious Talk</div>
+          <div class="timeline-time">5 minutes</div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div class="timeline-content">
+          <div class="timeline-label">🎬 Short Film</div>
+          <div class="timeline-time">10 minutes</div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div class="timeline-content">
+          <div class="timeline-label">👋 Goodbye</div>
+          <div class="timeline-time">3 minutes</div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <span class="section-label">your answer?</span>
+      <div class="buttons">
+        <button class="btn btn-accept" onclick="acceptInvitation()">
+          Yes, I'm in ✨
+        </button>
+        <button class="btn btn-reject" id="rejectBtn">
+          Nah
+        </button>
+      </div>
+    </div>
+    </div>
+
+    <!-- Success State - Invitation Card -->
+    <div class="success-state" id="successState">
+      <div class="invitation-card">
+        <div class="card-signature">N&amp;S</div>
+        <div class="card-message">
+          I knew you couldn't say no to me.
+        </div>
+        <div class="card-time" id="cardTime">
+          10:40 - 11:00
+        </div>
+        <div class="card-destination">
+          <span class="dest-line"></span>
+          <span>Very far, yet so close</span>
+          <span class="dest-line"></span>
+        </div>
+      </div>
+      <a href="../index.html" class="home-link">← Back to Home</a>
+    </div>
+  </div>
+
+  <div class="reject-hint" id="rejectHint">
+    You can't escape this 😄
+  </div>
+
+</div>
+
+<script>
+
+let selectedSlotIndex = null;
+
+// Display today's date
+function displayDate(){
+  const today = new Date();
+  const options = { weekday: 'long', month: 'short', day: 'numeric' };
+  document.getElementById('dateDisplay').textContent = today.toLocaleDateString('en-US', options);
+}
+
+displayDate();
+
+// Show when section
+function showWhen(){
+  document.getElementById('initialState').classList.add('hidden');
+  document.getElementById('whenSection').classList.remove('hidden');
+}
+
+// Slot selection
+function selectSlot(index){
+  document.querySelectorAll('.slot').forEach((slot, i) => {
+    slot.classList.toggle('selected', i === index);
+  });
+  selectedSlotIndex = index;
+
+  // Show selected time and why section
+  setTimeout(() => {
+    document.getElementById('whenSection').classList.add('hidden');
+    document.getElementById('selectedTimeDisplay').classList.remove('hidden');
+    document.getElementById('selectedTimeText').textContent = getSelectedTime();
+    document.getElementById('whySection').classList.remove('hidden');
+    setupRejectButton();
+  }, 300);
+}
+
+// Get selected time
+function getSelectedTime(){
+  const times = ['10:40 - 11:00', '11:00 - 11:20'];
+  return selectedSlotIndex !== null ? times[selectedSlotIndex] : 'Not selected';
+}
+
+// Accept invitation
+function acceptInvitation(){
+  if(selectedSlotIndex === null){
+    alert('Please select a time slot first');
+    return;
+  }
+
+  // Track accept count
+  trackAccept();
+
+  // Hide everything except the invitation card
+  document.querySelector('header').classList.add('hidden');
+  document.getElementById('selectedTimeDisplay').classList.add('hidden');
+  document.getElementById('whySection').classList.add('hidden');
+
+  // Show success state with invitation card
+  const successState = document.getElementById('successState');
+  document.getElementById('cardTime').textContent = getSelectedTime();
+  successState.classList.add('show');
+
+  // Disable buttons
+  document.querySelectorAll('.btn').forEach(btn => btn.disabled = true);
+}
+
+// Track accept count (stored in localStorage)
+function trackAccept(){
+  let count = parseInt(localStorage.getItem('invitationAccepts') || '0');
+  count++;
+  localStorage.setItem('invitationAccepts', count);
+
+  // Save to history
+  let history = JSON.parse(localStorage.getItem('invitationHistory') || '[]');
+  history.push({
+    time: getSelectedTime(),
+    timestamp: new Date().toISOString(),
+    count: count
+  });
+  localStorage.setItem('invitationHistory', JSON.stringify(history));
+
+  // Log to console
+  console.log('Total accepts:', count);
+  console.log('Timestamp:', new Date().toISOString());
+  console.log('Selected time:', getSelectedTime());
+}
+
+// Setup reject button for mouse and touch
+function setupRejectButton(){
+  const rejectBtn = document.getElementById('rejectBtn');
+  const hint = document.getElementById('rejectHint');
+  let attemptCount = 0;
+
+  function moveButton(){
+    attemptCount++;
+    trackRejectAttempt(attemptCount);
+
+    // Random position within viewport
+    const maxX = window.innerWidth - rejectBtn.offsetWidth - 20;
+    const maxY = window.innerHeight - rejectBtn.offsetHeight - 60;
+
+    const randomX = Math.random() * maxX;
+    const randomY = Math.random() * maxY;
+
+    rejectBtn.style.position = 'fixed';
+    rejectBtn.style.left = randomX + 'px';
+    rejectBtn.style.top = randomY + 'px';
+    rejectBtn.style.zIndex = '25';
+
+    // Show hint
+    hint.classList.add('show');
+    setTimeout(() => hint.classList.remove('show'), 1500);
+  }
+
+  // Mouse events
+  rejectBtn.addEventListener('mouseenter', moveButton);
+
+  // Touch events (for mobile)
+  rejectBtn.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    moveButton();
+  });
+
+  // Click fallback
+  rejectBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    moveButton();
+  });
+}
+
+function trackRejectAttempt(count){
+  console.log('Reject attempts:', count);
+}
+
+// Load stored accept count from localStorage when page loads
+window.addEventListener('load', () => {
+  const count = localStorage.getItem('invitationAccepts') || '0';
+  console.log('Page loaded - Total accepts from this browser:', count);
+});
+
+</script>
+
+</body>
+</html>
